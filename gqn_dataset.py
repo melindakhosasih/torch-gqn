@@ -4,6 +4,7 @@ import torch
 from torchvision.transforms import ToTensor, Resize
 from torch.utils.data import Dataset
 import random
+import gzip
 
 Context = collections.namedtuple('Context', ['frames', 'cameras'])
 Scene = collections.namedtuple('Scene', ['frames', 'cameras'])
@@ -30,8 +31,9 @@ class GQNDataset(Dataset):
         return len(os.listdir(self.root_dir))
 
     def __getitem__(self, idx):
-        scene_path = os.path.join(self.root_dir, "{}.pt".format(idx))
-        data = torch.load(scene_path)
+        scene_path = os.path.join(self.root_dir, "{}.pt.gz".format(idx))
+        with gzip.open(scene_path, 'rb') as f:
+            data = torch.load(f)
 
         byte_to_tensor = lambda x: ToTensor()(Resize(64)((Image.open(io.BytesIO(x)))))
 

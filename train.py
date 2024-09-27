@@ -1,13 +1,12 @@
 import argparse
-import datetime
-import math
 import os
+import random
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from torchvision.utils import make_grid, save_image
+from torchvision.utils import make_grid
 from gqn_dataset import GQNDataset, Scene, transform_viewpoint, sample_batch
 from scheduler import AnnealingStepLR
 from model import GQN
@@ -18,10 +17,10 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=36, help='size of batch (default: 36)')
     parser.add_argument('--dataset', type=str, default='Shepard-Metzler', help='dataset (dafault: Shepard-Mtzler)')
     parser.add_argument('--train_data_dir', type=str, help='location of training data', \
-                        default="/workspace/dataset/shepard_metzler_7_parts-torch/train")
+                        default="dataset/mazes-torch/train")
     parser.add_argument('--test_data_dir', type=str, help='location of test data', \
-                        default="/workspace/dataset/shepard_metzler_7_parts-torch/test")
-    parser.add_argument('--root_log_dir', type=str, help='root location of log', default='/workspace/logs')
+                        default="dataset/mazes-torch/test")
+    parser.add_argument('--root_log_dir', type=str, help='root location of log', default='logs')
     parser.add_argument('--log_dir', type=str, help='log directory (default: GQN)', default='GQN')
     parser.add_argument('--log_interval', type=int, help='interval number of steps for logging', default=100)
     parser.add_argument('--save_interval', type=int, help='interval number of steps for saveing models', default=10000)
@@ -30,8 +29,8 @@ if __name__ == '__main__':
     parser.add_argument('--representation', type=str, help='representation network (default: pool)', default='pool')
     parser.add_argument('--layers', type=int, help='number of generative layers (default: 12)', default=12)
     parser.add_argument('--shared_core', type=bool, \
-                        help='whether to share the weights of the cores across generation steps (default: False)', \
-                        default=False)
+                        help='whether to share the weights of the cores across generation steps (default: True)', \
+                        default=True)
     parser.add_argument('--seed', type=int, help='random seed (default: None)', default=None)
     args = parser.parse_args()
 
@@ -53,9 +52,9 @@ if __name__ == '__main__':
     log_interval_num = args.log_interval
     save_interval_num = args.save_interval
     log_dir = os.path.join(args.root_log_dir, args.log_dir)
-    os.mkdir(log_dir)
-    os.mkdir(os.path.join(log_dir, 'models'))
-    os.mkdir(os.path.join(log_dir,'runs'))
+    os.makedirs(log_dir, exist_ok=True)
+    os.makedirs(os.path.join(log_dir, 'models'), exist_ok=True)
+    os.makedirs(os.path.join(log_dir,'runs'), exist_ok=True)
 
     # TensorBoardX
     writer = SummaryWriter(log_dir=os.path.join(log_dir,'runs'))
