@@ -1,0 +1,17 @@
+name: gqn
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.6
+  - pytorch
+  - pytorch::pytorch-cuda
+  - torchvision
+  - numpy
+  - matplotlib
+  - tqdm
+  - pip
+  - pip:
+    - tensorflow==1.15.0
+    - tensorboardx

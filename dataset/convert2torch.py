@@ -1,4 +1,3 @@
-import time
 import os
 import collections
 import torch
@@ -158,43 +157,43 @@ if __name__ == '__main__':
         print(' [!] you need to give a dataset')
         exit()
 
+    root = "dataset"
     DATASET = sys.argv[1]
     dataset_info = _DATASETS[DATASET]
 
-    torch_dataset_path = f'{DATASET}-torch'
-    torch_dataset_path_train = f'{torch_dataset_path}/train'
-    torch_dataset_path_test = f'{torch_dataset_path}/test'
-
-    os.mkdir(torch_dataset_path)
-    os.mkdir(torch_dataset_path_train)
-    os.mkdir(torch_dataset_path_test)
+    torch_dataset_path = os.path.join(root, f"{DATASET}-torch")
+    torch_dataset_path_train = os.path.join(torch_dataset_path, "train")
+    torch_dataset_path_test = os.path.join(torch_dataset_path, "test")
+    os.makedirs(torch_dataset_path, exist_ok=True)
+    os.makedirs(torch_dataset_path_train, exist_ok=True)
+    os.makedirs(torch_dataset_path_test, exist_ok=True)
 
     ## train
-    file_names = _get_dataset_files(dataset_info, 'train', '.')
+    file_names = _get_dataset_files(dataset_info, "train", root)
 
-    tot = 0
+    total = 0
     for file in file_names:
         engine = tf.python_io.tf_record_iterator(file)
         for i, raw_data in enumerate(engine):
-            path = os.path.join(torch_dataset_path_train, f'{tot+i}.pt.gz')
+            path = os.path.join(torch_dataset_path_train, f'{total+i}.pt.gz')
             print(f' [-] converting scene {file}-{i} into {path}')
             p = Process(target=convert_raw_to_numpy, args=(dataset_info, raw_data, path, True))
             p.start();p.join() 
-        tot += i
+        total += i
 
-    print(f' [-] {tot} scenes in the train dataset')
+    print(f' [-] {total} scenes in the train dataset')
 
     ## test
-    file_names = _get_dataset_files(dataset_info, 'test', '.')
+    file_names = _get_dataset_files(dataset_info, "test", root)
 
-    tot = 0
+    total = 0
     for file in file_names:
         engine = tf.python_io.tf_record_iterator(file)
         for i, raw_data in enumerate(engine):
-            path = os.path.join(torch_dataset_path_test, f'{tot+i}.pt.gz')
+            path = os.path.join(torch_dataset_path_test, f'{total+i}.pt.gz')
             print(f' [-] converting scene {file}-{i} into {path}')
             p = Process(target=convert_raw_to_numpy, args=(dataset_info, raw_data, path, True))
             p.start();p.join()
-        tot += i
+        total += i
 
-    print(f' [-] {tot} scenes in the test dataset')
+    print(f' [-] {total} scenes in the test dataset')
