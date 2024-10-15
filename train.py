@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generative Query Network Implementation')
     parser.add_argument('--gradient_steps', type=int, default=2*10**6, help='number of gradient steps to run (default: 2 million)')
     parser.add_argument('--batch_size', type=int, default=36, help='size of batch (default: 36)')
-    parser.add_argument('--dataset', type=str, default='Shepard-Metzler', help='dataset (dafault: Shepard-Mtzler)')
+    parser.add_argument('--dataset', type=str, default='Mazes', help='dataset (dafault: Mazes)')
     parser.add_argument('--train_data_dir', type=str, help='location of training data', \
                         default="dataset/mazes-torch/train")
     parser.add_argument('--test_data_dir', type=str, help='location of test data', \
